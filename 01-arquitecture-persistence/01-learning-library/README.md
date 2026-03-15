@@ -1,55 +1,71 @@
-# 📚 Proyecto 01: The Decoupled Library
+# 📚 Enunciado: The Decoupled Library (Gestión de Préstamos)
 
-Este proyecto es el punto de partida de la Fase 1. Aquí implementaremos el núcleo de un sistema de gestión bibliotecaria aplicando **Arquitectura Limpia**. La prioridad es el desacoplamiento: la lógica de negocio debe ser agnóstica a la base de datos y al framework web.
+Este es tu primer proyecto de aprendizaje de la Fase 1. El objetivo principal no es solo que el código "funcione", sino que la lógica de negocio esté totalmente aislada de la tecnología externa (bases de datos y frameworks web).
 
-## 🎯 Objetivos de Aprendizaje
+## 🎯 Objetivo Técnico
 
-- Aplicar la **Regla de la Dependencia.**
+Construir una API de gestión de biblioteca utilizando **Clean Architecture**. Debes demostrar que puedes cambiar el mecanismo de persistencia (de una lista en memoria a una base de datos real) sin modificar las reglas de préstamo.
 
-- Definir **Entidades de Dominio** puras (sin dependencias externas).
+## 📋 Requisitos Funcionales
 
-- Orquestar la lógica mediante **Casos de Uso.**
+#### 1. Gestión de Libros
 
-- Implementar el **Patrón Repositorio** (In-Memory y SQL).
+- Cada libro debe tener un identificador único (ISBN), un título, un autor y la cantidad de ejemplares disponibles en stock.
 
-## 📋 Enunciado y Reglas de Negocio
+- Debe permitir el registro de nuevos ejemplares.
 
-El sistema debe gestionar el préstamo de libros a socios cumpliendo estrictamente con las siguientes validaciones antes de confirmar cualquier operación:
+#### 2. Gestión de Socios
 
-1.  **Validación de Inventario:** No se puede realizar un préstamo si el libro tiene stock = 0.
+- Cada socio se identifica por un ID único, nombre y correo electrónico.
 
-2.  **Límite de Préstamos:** Un socio tiene un límite máximo de 3 libros activos. Si intenta pedir un cuarto, el sistema debe denegar la operación con un mensaje de error de negocio.
+#### 3. Lógica de Préstamos (Reglas de Negocio)
 
-3.  **Ciclo de Devolución:** Al devolver un libro, el stock debe incrementarse automáticamente y el préstamo debe quedar cerrado.
+Esta es la parte más importante del proyecto. Debes implementar un servicio que valide lo siguiente antes de confirmar un préstamo:
 
-## 🏗️ Requerimientos Técnicos
+- **Regla de Stock:** No se puede prestar un libro si no quedan unidades disponibles en el inventario.
 
-#### Estructura de Capas (src/)
+- **Regla de Límite:** Un socio no puede tener más de 3 libros prestados al mismo tiempo. Si ya tiene 3, el sistema debe rechazar la operación.
 
-- domain/: Clases Libro, Socio y Prestamo (Python puro, sin librerías).
+#### 4. Devoluciones
 
-- application/: Lógica de los casos de uso (ej. RealizarPrestamoService).
+- Al devolver un libro, el stock debe aumentar y el préstamo debe marcarse como finalizado.
 
-- infrastructure/: Adaptadores de persistencia (SQLAlchemy y Repositorio en memoria).
+## 🏗️ Estructura del Proyecto
 
-- entrypoints/: Rutas de FastAPI.
+Debes organizar tu código en las siguientes capas, siguiendo la "Regla de la Dependencia":
 
-#### Estándares de Calidad
+1.  **Capa de Dominio (Domain):**
+    - Contiene las **Entidades** (clases puras de Python como Libro y Socio).
 
-- **Type Hinting:** Obligatorio en todos los parámetros y retornos.
+    - No debe importar nada de FastAPI, SQLAlchemy o cualquier otra librería externa.
 
-- **Clean Code:** Nombres descriptivos y funciones de responsabilidad única.
+2.  **Capa de Aplicación (Application):**
+    - Contiene los **Casos de Uso** (ej: la lógica de RealizarPrestamo).
 
-- **Excepciones:** Manejo de errores de dominio personalizados (ej: StockInsuficienteError).
+    - Aquí es donde se verifican las reglas de negocio mencionadas arriba.
 
-## 🚀 Guía de Ejecución
+3.  **Capa de Infraestructura (Infrastructure):**
+    - Aquí implementarás el **Repositorio**. Inicialmente, crea uno que guarde los datos en una lista de Python (en memoria).
 
-1.  **Diseño de Dominio:** Crear entidades en src/domain/.
+    - Más adelante, aquí es donde configurarás SQLAlchemy para conectar con PostgreSQL.
 
-2.  **Casos de Uso:** Implementar la lógica en src/application/.
+4.  **Capa de Entrada (Entrypoints):**
+    - Configuración de FastAPI y las rutas (endpoints) para interactuar con el sistema.
 
-3.  **Persistencia:** Crear el repositorio en memoria en src/infrastructure/.
+## 🛠️ Pasos Sugeridos
 
-4.  **API:** Exponer los endpoints en src/entrypoints/.
+1.  Define tus entidades en la capa de dominio usando clases de datos.
 
-**Estado:** 🏗️ En fase de diseño de dominio.
+2.  Escribe la lógica del caso de uso de préstamo, definiendo cómo recibirá la información de los libros y socios.
+
+3.  Crea una interfaz (o contrato) para el repositorio de datos.
+
+4.  Implementa la API con FastAPI para exponer estas funcionalidades.
+
+## 🚨 Restricciones
+
+- **Prohibido** usar lógica de base de datos dentro de las rutas de FastAPI.
+
+- **Prohibido** que la capa de dominio importe librerías de infraestructura.
+
+- **Utiliza Type Hinting** en todos los parámetros y retornos de funciones para asegurar la claridad del código.
