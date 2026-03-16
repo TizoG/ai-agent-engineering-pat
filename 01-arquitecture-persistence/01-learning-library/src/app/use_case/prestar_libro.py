@@ -30,6 +30,30 @@ class RealizarPrestamo:
         return "Prestamo realizado con exito"
 
 
+class RealizarDevolucion:
+    def __init__(self, libro_repo: LibroRepository, socio_repo: SocioRepository):
+        self.libro_repo = libro_repo
+        self.socio_repo = socio_repo
+
+    def devolver(self, id: int, isbn: str):
+        socio = self.socio_repo.obtener_por_id(id)
+        libro = self.libro_repo.obtener_por_isbn(isbn)
+
+        if not socio or not libro:
+            raise ValueError("Socio o Libro no encontrado.")
+
+        if libro.isbn not in socio.prestamos:
+            return f"Lo siento, pero {libro.titulo}, no se lo hemos prestado a {socio.nombre}."
+
+        libro.stock += 1
+        socio.prestamos.remove(libro.isbn)
+
+        self.libro_repo.actualizar(libro)
+        self.socio_repo.actualizar(socio)
+
+        return f"El libro {libro.titulo}, ya lo ha devuelto {socio.nombre}."
+
+
 class MemoriaLibroRepository(LibroRepository):
     def __init__(self):
         self.libros = {}
