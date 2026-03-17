@@ -1,0 +1,26 @@
+{
+    "1": {
+        "id": 1,
+        "nombre": "Socio 1",
+        "email": [],
+        "prestamos": []
+    },
+    "2": {
+        "id": 2,
+        "nombre": "Socio 2",
+        "email": [],
+        "prestamos": []
+    },
+    "3": {
+        "id": 3,
+        "nombre": "Socio 3",
+        "email": [],
+        "prestamos": []
+    },
+    "4": {
+        "id": 4,
+        "nombre": "Socio 4",
+        "email": [],
+        "prestamos": []
+    }
+}

@@ -1,0 +1,58 @@
+from ...Infrastructure.repository import LibroRepository, SocioRepository
+
+
+class RealizarPrestamo:
+    def __init__(self, libro_repo: LibroRepository, socio_repo: SocioRepository):
+        # Inyectamos las dependencias
+        self.libro_repo = libro_repo
+        self.socio_repo = socio_repo
+
+    def ejecutar(self, id: int, isbn: str):
+        # Recuperamos datos
+        socio = self.socio_repo.obtener_por_id(id)
+        libro = self.libro_repo.obtener_por_isbn(isbn)
+
+        if not socio or not libro:
+            raise ValueError("Socio o Libro no encontrado.")
+
+        # Validar reglas de negocio.
+        if libro.stock <= 0:
+            raise ValueError("No hay unidades disponibles.")
+
+        if len(socio.prestamos) >= 3:
+            raise ValueError("El socio ya tiene 3 prestamos activos.")
+
+        # Modificamos
+        libro.stock -= 1
+        socio.prestamos.append(libro.isbn)
+
+        self.libro_repo.actualizar(libro)
+        self.socio_repo.actualizar(socio)
+
+        return "Prestamo realizado con exito"
+
+
+class RealizarDevolucion:
+    def __init__(self, libro_repo: LibroRepository, socio_repo: SocioRepository):
+        self.libro_repo = libro_repo
+        self.socio_repo = socio_repo
+
+    def devolver(self, id: int, isbn: str):
+        socio = self.socio_repo.obtener_por_id(id)
+        libro = self.libro_repo.obtener_por_isbn(isbn)
+
+        if not socio or not libro:
+            raise ValueError("Socio o Libro no encontrado.")
+
+        if libro.isbn not in socio.prestamos:
+            raise ValueError(
+                f"Lo siento, pero {libro.titulo}, no se lo hemos prestado a {socio.nombre}.")
+        if len(socio.prestamos) <= 0:
+            raise ValueError("El socio no tiene prestamos activos.")
+        libro.stock += 1
+        socio.prestamos.remove(libro.isbn)
+
+        self.libro_repo.actualizar(libro)
+        self.socio_repo.actualizar(socio)
+
+        return f"El libro {libro.titulo}, ya lo ha devuelto {socio.nombre}."
