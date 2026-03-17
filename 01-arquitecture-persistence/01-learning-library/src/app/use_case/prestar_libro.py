@@ -1,4 +1,4 @@
-from Infrastructure.repository import LibroRepository, SocioRepository
+from ...Infrastructure.repository import LibroRepository, SocioRepository
 
 
 class RealizarPrestamo:
@@ -23,6 +23,8 @@ class RealizarPrestamo:
             raise ValueError("El socio ya tiene 3 prestamos activos.")
 
         # Modificamos
+        libro.stock -= 1
+        socio.prestamos.append(libro.isbn)
 
         self.libro_repo.actualizar(libro)
         self.socio_repo.actualizar(socio)
@@ -43,8 +45,10 @@ class RealizarDevolucion:
             raise ValueError("Socio o Libro no encontrado.")
 
         if libro.isbn not in socio.prestamos:
-            return f"Lo siento, pero {libro.titulo}, no se lo hemos prestado a {socio.nombre}."
-
+            raise ValueError(
+                f"Lo siento, pero {libro.titulo}, no se lo hemos prestado a {socio.nombre}.")
+        if len(socio.prestamos) <= 0:
+            raise ValueError("El socio no tiene prestamos activos.")
         libro.stock += 1
         socio.prestamos.remove(libro.isbn)
 
@@ -52,14 +56,3 @@ class RealizarDevolucion:
         self.socio_repo.actualizar(socio)
 
         return f"El libro {libro.titulo}, ya lo ha devuelto {socio.nombre}."
-
-
-class MemoriaLibroRepository(LibroRepository):
-    def __init__(self):
-        self.libros = {}
-
-    def obtener_por_isbn(self, isbn):
-        return self.libros.get(isbn)
-
-    def actualizar(self, libro):
-        self.libros[libro.isbn] = libro

@@ -1,0 +1,26 @@
+{
+    "123": {
+        "isbn": "123",
+        "titulo": "Libro 1",
+        "autor": "Autor 1",
+        "stock": 10
+    },
+    "456": {
+        "isbn": "456",
+        "titulo": "Libro 2",
+        "autor": "Autor 2",
+        "stock": 5
+    },
+    "789": {
+        "isbn": "789",
+        "titulo": "Libro 3",
+        "autor": "Autor 3",
+        "stock": 10
+    },
+    "012": {
+        "isbn": "012",
+        "titulo": "Libro 4",
+        "autor": "Autor 4",
+        "stock": 10
+    }
+}
