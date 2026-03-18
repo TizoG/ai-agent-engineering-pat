@@ -31,7 +31,7 @@ class MemoriaSocioRepositorio(SocioRepository):
     def __init__(self):
         self.socios = {}
 
-    def obtener_por_id(self, id):
+    def obtener_por_id(self, id) -> Optional[Socio]:
         return self.socios.get(id)
 
     def actualizar(self, socio):
@@ -45,7 +45,7 @@ class MemoriaLibroRepository(LibroRepository):
     def __init__(self):
         self.libros = {}
 
-    def obtener_por_isbn(self, isbn):
+    def obtener_por_isbn(self, isbn) -> Optional[Libro]:
         return self.libros.get(isbn)
 
     def actualizar(self, libro):
