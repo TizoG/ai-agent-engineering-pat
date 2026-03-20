@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, status
+from fastapi import FastAPI, APIRouter, HTTPException, status, Depends
 from uuid import UUID
 
 from .schemas.create_tarea import CreateTarea
@@ -8,12 +8,14 @@ from .repository.task_repository import MemoriaTareaRepositorio
 app = FastAPI()
 router = APIRouter()
 
-tarea_repo = MemoriaTareaRepositorio()
+
+def get_repo():
+    return MemoriaTareaRepositorio()
 
 
 @router.post("/tasks")
-def create_tarea(tarea: CreateTarea):
-    task_create = CrearTarea(tarea_repo)
+def create_tarea(tarea: CreateTarea, repo=Depends(get_repo)):
+    task_create = CrearTarea(repo)
 
     try:
         task_create.ejecutar(tarea.titulo,
@@ -25,14 +27,14 @@ def create_tarea(tarea: CreateTarea):
 
 
 @router.get("/tasks")
-def get_tasks():
-    list_tasks = ListarTareas(tarea_repo)
+def get_tasks(repo=Depends(get_repo)):
+    list_tasks = ListarTareas(repo)
     return list_tasks.ejecutar()
 
 
 @router.put("/tasks/{id}/complete")
-def put_complete(id: UUID):
-    task_complete = CompletarTarea(tarea_repo)
+def put_complete(id: UUID, repo=Depends(get_repo)):
+    task_complete = CompletarTarea(repo)
     try:
         task_complete.ejecutar(id)
         return {"message": "Tarea completa con exito"}
@@ -42,8 +44,8 @@ def put_complete(id: UUID):
 
 
 @router.delete("/tasks/{id}")
-def delete_task(id: UUID):
-    dele_task = EliminarTarea(tarea_repo)
+def delete_task(id: UUID, repo=Depends(get_repo)):
+    dele_task = EliminarTarea(repo)
     try:
         dele_task.ejecutar(id)
         return {"message": "Tarea eliminada correctamente."}
