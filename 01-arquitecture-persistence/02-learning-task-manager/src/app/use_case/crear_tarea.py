@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import uuid4, UUID
 
 from ...infrastructure.repository.task_repository import TaskRepository
 from ...domain.tarea import Estado, Tarea
@@ -10,7 +11,7 @@ class CrearTarea:
 
         self.tarea_repo = tarea_repo
 
-    def ejecutar(self, id: int, titulo: str, descripcion: str, fecha: datetime, estado: Estado):
+    def ejecutar(self, titulo: str, descripcion: str, estado: Estado):
         list_tareas = self.tarea_repo.get_all()
         for title in list_tareas:
             if title.titulo == titulo:
@@ -23,10 +24,8 @@ class CrearTarea:
         if total_pendientes >= 10:
             raise ValueError("No puedes tener más de 10 tareas.")
         new_tarea = Tarea(
-            id=id,
             titulo=titulo,
             descripcion=descripcion,
-            fecha=fecha,
             estado=estado
         )
         self.tarea_repo.crear_tarea(new_tarea)
@@ -38,7 +37,7 @@ class CompletarTarea:
     def __init__(self, tarea_repo: TaskRepository):
         self.tarea_repo = tarea_repo
 
-    def ejecutar(self, id: int):
+    def ejecutar(self, id: UUID):
         tarea_buscada = self.tarea_repo.get_by_id(id)
         if not tarea_buscada:
             raise ValueError("Lo siento, pero no encontramos esta tarea.")
@@ -54,3 +53,16 @@ class ListarTareas:
     def ejecutar(self):
         all_task = self.tarea_repo.get_all()
         return all_task
+
+
+class EliminarTarea:
+
+    def __init__(self, tarea_repo: TaskRepository):
+        self.tarea_repo = tarea_repo
+
+    def ejecutar(self, id: UUID):
+        exist = self.tarea_repo.get_by_id(id)
+
+        if not exist:
+            raise ValueError("Lo siento pero esta tarea no existe.")
+        self.tarea_repo.eliminar_tarea(exist.id)

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
+from uuid import UUID
 
 from ...domain.tarea import Tarea
 
@@ -16,7 +17,7 @@ class TaskRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: int) -> Optional[Tarea]:
+    def get_by_id(self, id: UUID) -> Optional[Tarea]:
         pass
 
     @abstractmethod
@@ -24,7 +25,7 @@ class TaskRepository(ABC):
         pass
 
     @abstractmethod
-    def eliminar_tarea(self, id: int) -> None:
+    def eliminar_tarea(self, id: UUID) -> None:
         pass
 
 

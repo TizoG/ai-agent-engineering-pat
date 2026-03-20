@@ -1,5 +1,6 @@
 from enum import Enum
 from datetime import datetime
+from uuid import uuid4
 
 
 class Estado(Enum):
@@ -9,9 +10,9 @@ class Estado(Enum):
 
 class Tarea:
 
-    def __init__(self, id: int, titulo: str, descripcion: str, fecha: datetime, estado: Estado = Estado.PENDIENTE):
-        self.id = id
+    def __init__(self, titulo: str, descripcion: str, estado: Estado = Estado.PENDIENTE):
+        self.id = uuid4()
         self.titulo = titulo
         self.descripcion = descripcion
-        self.fecha = fecha
+        self.fecha = datetime.now()
         self.estado = estado
