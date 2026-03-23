@@ -1,17 +1,25 @@
 from fastapi import FastAPI, APIRouter, HTTPException, status, Depends
 from uuid import UUID
+from sqlalchemy.orm import Session
 
 from .schemas.create_tarea import CreateTarea
 from ..app.use_case.crear_tarea import CrearTarea, ListarTareas, CompletarTarea, EliminarTarea
 from .repository.task_repository import MemoriaTareaRepositorio
+from .repository.memory_database.sql_repositoy import SqlRepository
+from .repository.memory_database.db import get_db
+from ..infrastructure.repository.memory_database.db import Base, engine
 
 app = FastAPI()
 router = APIRouter()
 
+Base.metadata.create_all(engine)
 
-def get_repo():
-    return MemoriaTareaRepositorio()
 
+def get_repo(db: Session = Depends(get_db)):
+    return SqlRepository(db)
+
+
+# Para la Data Base db : Session = Depends(get_db)
 
 @router.post("/tasks")
 def create_tarea(tarea: CreateTarea, repo=Depends(get_repo)):

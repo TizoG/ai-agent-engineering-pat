@@ -1,0 +1,20 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+
+URL_DATABASE = "sqlite:///task.db"
+engine = create_engine(URL_DATABASE, echo=True, )
+
+SessionLocal = sessionmaker(bind=engine)
+Base = declarative_base()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
